@@ -49,14 +49,6 @@ class Part {
   Object.defineProperties(this, {
    key: { value: key },
    subparts: { value: subparts },
-   enabled: { value: undefined, writable: true },
-   disabled: { value: undefined, writable: true },
-   dirty: { value: false, writable: true },
-   wasEnabled: { value: undefined, writable: true },
-   justDisabled: { value: undefined, writable: true },
-   justEnabled: { value: undefined, writable: true },
-   previousHash: { value: -1n, writable: true },
-   deltaHash: { value: 0n, writable: true },
    cardinality: { value: 1n, writable: true },
   })
 
@@ -74,6 +66,19 @@ class Part {
     [index]: { value: subpart }
    })
   })
+ }
+ hash(model, format = "string") {
+  if (model !== null)
+   throw `Hash Error: The base Part type does not support hashing any model besides null.`
+
+  return format === "string" ? "" : 0n
+ }
+ unhash(hash, format = "string") {
+  const n = format === "string" ? Part.decode(hash) : hash
+
+  if (n !== 0n) throw `Unhash Error: Hash ${n} is outside the range of the base Part (max ${this.cardinality - 1n}).`
+
+  return null
  }
 }
 class Tuple extends Part {
@@ -116,7 +121,7 @@ class Tuple extends Part {
   }
 
   if (n >= this.cardinality)
-   throw new RangeError(`Hash Error: Tuple "${this.path}" does not support a hash up to ${n} (max ${this.cardinality}).`)
+   throw new RangeError(`Hash Error: Tuple "${this.path}" does not support a hash up to ${n} (max ${this.cardinality - 1n}).`)
 
   return format === "string" ? Part.encode(n) : n
  }
@@ -175,7 +180,7 @@ class Choice extends Part {
   const n = this.offsets.get(subpart) + m
 
   if (n >= this.cardinality)
-   throw new RangeError(`Hash Error: Tuple "${this.path}" does not support a hash up to ${n} (max ${this.cardinality}).`)
+   throw new RangeError(`Hash Error: Tuple "${this.path}" does not support a hash up to ${n} (max ${this.cardinality - 1n}).`)
 
   return format === "string" ? Part.encode(n) : n
  }
@@ -193,4 +198,4 @@ class Choice extends Part {
  }
 }
 
-export default { Part, Tuple, Choice }
+export { Part, Tuple, Choice }
