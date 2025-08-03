@@ -1,0 +1,44 @@
+{
+ "name": "mphf",
+ "version": "0.1.1",
+ "description": "Hash and unhash structured model data with no collisions, duplicates or gaps using minimal perfect hash functions. Currently in alpha. Expect breaking changes for version 0. Use with caution!",
+ "main": "mphf.js",
+ "scripts": {
+  "test": "echo \"Error: no test specified\" && exit 1"
+ },
+ "repository": {
+  "type": "git",
+  "url": "git+https://github.com/EJAugust/mphf.git"
+ },
+ "keywords": [
+  "minimal-perfect-hash-function",
+  "minimal",
+  "perfect",
+  "hash",
+  "function",
+  "state",
+  "model",
+  "hashing",
+  "url",
+  "encoding",
+  "decoding",
+  "tuple",
+  "choice",
+  "sum-type",
+  "product-type",
+  "disjoint-union",
+  "cartesian-product",
+  "structured-data",
+  "url-state",
+  "algebraic-data-types",
+  "radix",
+  "bitpacking",
+  "bigint"
+ ],
+ "author": "Eric Augustinowicz",
+ "license": "MIT",
+ "bugs": {
+  "url": "https://github.com/EJAugust/mphf/issues"
+ },
+ "homepage": "https://github.com/EJAugust/mphf#readme"
+}
