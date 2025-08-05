@@ -3,6 +3,8 @@ export declare class Part {
  static encode(n: bigint): string
  /** Decodes the given hash, returning the corresponding bigint. */
  static decode(hash: string): bigint
+ /** The alphabet used for encoding and decoding BigInt values as strings. */
+ readonly static radix: string
  /** The number of states the model has, used heavily to compute the hashing function across the model configuration space. */
  readonly cardinality: bigint
  /** The path to this part in the model hierarchy. */

@@ -1,6 +1,6 @@
 {
  "name": "mphf",
- "version": "0.1.3",
+ "version": "0.1.4",
  "description": "Hash and unhash structured model data with no collisions, duplicates or gaps using minimal perfect hash functions. Currently in alpha. Expect breaking changes for version 0. Use with caution!",
  "type": "module",
  "main": "./index.js",

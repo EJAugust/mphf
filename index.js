@@ -35,7 +35,11 @@ class Part {
 
   for (const character of [...hash]) {
    const characterValue = this.radix.indexOf(character)
-   if (characterValue === -1 || characterValue >= 64) throw character
+   if (characterValue === -1 || characterValue >= 64) {
+    const e = new SyntaxError(`Cannot decode hash "${hash}" because it contains a character that is outside of the radix (stopped on character "${character}").`)
+    e.invalidCharacter = character
+    throw e
+   }
    charmRoundedBinaryString += characterValue.toString(2).padStart(6, 0)
    charmLengthOffsetBinaryString += "000001"
   }
@@ -67,17 +71,36 @@ class Part {
    })
   })
  }
- hash(model, format = "string") {
+ validate(hash, type = "string") {
+  const supportedTypes = ["string", "bigint"]
+
+  if (!supportedTypes.includes(type))
+   throw TypeError(`MPHF "${this.path}" cannot unhash with unsupported type "${type}"; must be one of ${JSON.stringify(supportedTypes)}.`)
+
+  if (type !== typeof hash)
+   throw TypeError(`MPHF "${this.path}" cannot unhash input of type ${typeof hash} when type argument is set to "${type}".`)
+
+  try {
+   const n = type === "string" ? Part.decode(hash) : hash
+
+   if (n >= this.cardinality || n < 0n)
+    throw new RangeError(`MPHF "${this.path}" cannot unhash ${type === "string" ? `"${hash}" = ${n}` : n} because it is outside the hash range [0, ${this.cardinality - 1n}].`)
+
+   return n
+  } catch (e) {
+   if (e.invalidCharacter)
+    throw new SyntaxError(`MPHF "${this.path}" cannot unhash "${hash}" because it contains character "${e.invalidCharacter}" which is outside of the radix.`)
+   else throw e
+  }
+ }
+ hash(model, type = "string") {
   if (model !== null)
    throw `Hash Error: The base Part type does not support hashing any model besides null.`
 
-  return format === "string" ? "" : 0n
+  return type === "string" ? "" : 0n
  }
- unhash(hash, format = "string") {
-  const n = format === "string" ? Part.decode(hash) : hash
-
-  if (n !== 0n) throw `Unhash Error: Hash ${n} is outside the range of the base Part (max ${this.cardinality - 1n}).`
-
+ unhash(hash, type = "string") {
+  this.validate(hash, type)
   return null
  }
 }
@@ -99,7 +122,7 @@ class Tuple extends Part {
    cardinality: { value: product }
   })
  }
- hash(model, format = "string") {
+ hash(model, type = "string") {
 
   if (typeof model !== "object")
    throw new TypeError(`Hash Error: Tuple "${this.path}" does not support computing a hash from a model of type "${typeof model}".`)
@@ -123,10 +146,10 @@ class Tuple extends Part {
   if (n >= this.cardinality)
    throw new RangeError(`Hash Error: Tuple "${this.path}" does not support a hash up to ${n} (max ${this.cardinality - 1n}).`)
 
-  return format === "string" ? Part.encode(n) : n
+  return type === "string" ? Part.encode(n) : n
  }
- unhash(hash, format = "string") {
-  let n = format === "string" ? Part.decode(hash) : hash
+ unhash(hash, type = "string") {
+  let n = this.validate(hash, type)
   const model = {}
 
   for (const subpart of this.subparts) {
@@ -156,7 +179,7 @@ class Choice extends Part {
    cardinality: { value: sum }
   })
  }
- hash(model, format = "string") {
+ hash(model, type = "string") {
   const isString = typeof model === "string"
 
   if (!isString && typeof model !== "object")
@@ -182,10 +205,10 @@ class Choice extends Part {
   if (n >= this.cardinality)
    throw new RangeError(`Hash Error: Tuple "${this.path}" does not support a hash up to ${n} (max ${this.cardinality - 1n}).`)
 
-  return format === "string" ? Part.encode(n) : n
+  return type === "string" ? Part.encode(n) : n
  }
- unhash(hash, format = "string") {
-  const n = format === "string" ? Part.decode(hash) : hash
+ unhash(hash, type = "string") {
+  const n = this.validate(hash, type)
 
   for (let i = 0; i < this.subparts.length; i++) {
    if (i + 1 === this.subparts.length || n < this.offsets.get(this.subparts[i + 1])) {
