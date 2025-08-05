@@ -1,9 +1,9 @@
 {
  "name": "mphf",
- "version": "0.1.2",
+ "version": "0.1.3",
  "description": "Hash and unhash structured model data with no collisions, duplicates or gaps using minimal perfect hash functions. Currently in alpha. Expect breaking changes for version 0. Use with caution!",
- "main": "mphf.js",
  "type": "module",
+ "main": "./index.js",
  "scripts": {
   "test": "node test"
  },
@@ -42,5 +42,14 @@
   "url": "https://github.com/EJAugust/mphf/issues"
  },
  "homepage": "https://github.com/EJAugust/mphf#readme",
- "types": "index.d.ts"
+ "types": "index.d.ts",
+ "exports": {
+  ".": {
+   "types": "./index.d.ts",
+   "default": "./index.js"
+  },
+  "./package.json": "./package.json",
+  "./LICENSE.md": "./LICENSE.md",
+  "./README.md": "./README.md"
+ }
 }
