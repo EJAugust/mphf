@@ -1,11 +1,40 @@
-# MPHF - Minimal Perfect Hash Function
-This project is a small library that takes some structured model data and creates a minimal perfect hash function over every possible model state.
+<h1><p align="center"> MPHF<br>Minimal Perfect Hash Functions for the Web</p></h1>
 
-MPHF can output either an integer or a URL-safe base64 hash string of that integer. This represetation achieves the information-theoretic lower bound for storage size of any correctly formatted model.
+This project is a small library that takes a model structure and creates a minimal perfect hash function over every possible model state.
+
+MPHF creates hierarchical structures such that every element acts as its own independant MPHF.
+
+Every MPHF node can take an instance of its corresponding data model and output either an `bigint` integer or a URL-safe base64 hash string.
+
+Likewise, it can take any hash or `bigint` within the MPHF's domain and output the corresponding data model instance.
+
+```js
+myModel.hash({
+ top: "tank-top",
+ bottom: "shorts",
+ shoes: {
+  color: "magenta",
+  "elastic-laces": "no",
+  "lace-color": "red"
+ },
+ socks: "mid-calf"
+})
+// Output: "6Z"
+
+myModel.unhash("6Z")
+/* Output:
+{
+ top: 'tank-top',
+ bottom: 'shorts',
+ shoes: { color: 'magenta', 'elastic-laces': 'no', 'lace-color': 'red' },
+ socks: 'mid-calf'
+}
+*/
+```
 
 ## Entropy-Perfect Encoding
 
-Every possible model state is assigned a BigInt value and a unique variable-length base64 hash, derived from a bijective minimal perfect hash function. This makes hashes as compact and expressive as is mathematically possible.
+Every possible model state is assigned a BigInt value and a unique variable-length base64 hash, derived from a bijective minimal perfect hash function. This makes hashes as compact and expressive as is mathematically possible; it achieves the information-theoretic lower bound for storing a an instance of the data model.
 
 MPHF provides a compression solution that is uniquely built for a given data model and safely hashes and unhashes every state in that model.
 
@@ -16,7 +45,7 @@ If there are 10,000,000,000,000,000,000,000,000,000,000,000,000,000,000 possible
 An example use-case of this is embedding rich state information in places with limited space, such as a URL or DNS TXT record, without the syntactical overhead of query parameters,JSON objects, or delimiters.
 
 ```
-https://www.ejaugust.com/0.126.3/4lb5kAsH_R0Dv_UHg/
+https://www.ejaugust.com/0.126.13/4lb5kAsH_R0Dv_UHg/
 ```
 
 ## Installation
